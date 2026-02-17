@@ -1,10 +1,11 @@
 # Cognitive Quality Engineering — Implementation Roadmap
 
-> **Version**: 1.1.0
+> **Version**: 2.0.0
 > **Repository**: `cq-engine`
 > **License**: MIT
 > **Origin**: Initial exploration (5 Directions + DSL/CTL analysis)
 > **Purpose**: Public GitHub repository roadmap for the CQE ecosystem
+> **Detail files**: Each phase has a dedicated detail document in `docs/phases/`
 
 ---
 
@@ -43,16 +44,22 @@ Phase 1                Phase 2                Phase 3                Phase 4
 FOUNDATION             KILLER APP             DISTRIBUTION           EXPANSION
 ─────────────────────  ─────────────────────  ─────────────────────  ─────────────────────
 CQE Patterns v0.1      MutaDoc v0.1           CQ MCP Server v0.1     ThinkTank v0.1
-cqlint v0.1            + Mutation-Driven       + mutadoc/cqlint       + 8 personas
-CQ Benchmark v0.1        Repair                 as MCP tools         + 3-Wave pipeline
-(spec only)            + Regression Mutation   + Hooks integration    + Anchoring Visibility
-                       + CQ Benchmark applied  + Telemetry baseline   + MCP integration
-                                                                     + Feedback loop start
+  8 patterns (GoF)       5 mutation strategies   6 MCP tools            8 personas
+  Anti-Patterns          3 adversarial personas  3 hooks                3-Wave pipeline
+cqlint v0.1              Mutation-Driven Repair  Telemetry baseline     Anchoring Visibility
+  5 rules (Bash)         12 document presets     Feedback loop v1       Contradiction Heatmap
+CQ Benchmark v0.1        CQ Benchmark applied                          MCP integration
+  4-axis spec                                                          Feedback loop v2
 
+Milestones: 7          Milestones: 6          Milestones: 7          Milestones: 11
+Tasks: ~25             Tasks: 40              Tasks: 18              Tasks: 30
 Size: M                Size: L                Size: L                Size: L
 ───────────────────────────────────────────────────────────────────────────────────────────
                                   ▲
                         CQ Benchmark (cross-cutting: defined in Phase 1, applied from Phase 2)
+
+                        Phase 5 (CONDITIONAL): CTL — Cognitive Task Language
+                        Revival checkpoint at Phase 3. Milestones: 7, Tasks: 10
 ```
 
 ### CTL (Cognitive Task Language) — Cross-Cutting Consideration
@@ -61,8 +68,10 @@ CTL was explored as a dedicated DSL for describing cognitive tasks with type-saf
 
 **CTL positioning in this roadmap:**
 - **Phase 1**: CTL concepts are absorbed into cqlint rules (budget checking, gate validation, persona verification)
-- **Phase 3**: If CQE Patterns reach v0.2+ and community demand exists, CTL may be revived as an optional power-user layer on top of cqlint
+- **Phase 3**: Revival checkpoint — if 4 quantitative criteria are met, CTL proceeds to Phase 5
 - **Rationale**: "Tools first, language later" — users experience cqlint, understand why it catches what it catches, and only then might want the expressiveness of a dedicated language
+
+> **Full detail**: [phases/phase-5-ctl.md](phases/phase-5-ctl.md)
 
 ---
 
@@ -74,6 +83,8 @@ CTL was explored as a dedicated DSL for describing cognitive tasks with type-saf
 
 **Purpose**: Define the vocabulary of Cognitive Quality Engineering. Name the unnamed concepts, formalize them as patterns, build the first automated verifier, and specify the measurement framework.
 
+> **Full detail**: [phase-1-foundation.md](phases/phase-1-foundation.md)
+
 **Deliverables**:
 
 | # | Deliverable | Description |
@@ -84,32 +95,28 @@ CTL was explored as a dedicated DSL for describing cognitive tasks with type-saf
 
 **8 Core Patterns**:
 
-| # | Pattern | Problem | Weight | Evidence |
-|---|---------|---------|--------|----------|
-| 1 | Attention Budget | LLM attention is finite but unmanaged | Foundational | B |
-| 2 | Context Gate | Passing all information between agents contaminates attention | Foundational | B |
-| 3 | Cognitive Profile | Generic agents underperform specialized ones | Foundational | B |
-| 4 | Wave Scheduler | Simultaneous deployment degrades quality | Situational | B |
-| 5 | Assumption Mutation | Unverified assumptions hide vulnerabilities | Situational | B |
-| 6 | Experience Distillation | Without learning from execution, failures repeat | Advanced | B |
-| 7 | File-Based I/O | Agent communication needs reliability and transparency | Foundational | B |
-| 8 | Template-Driven Role | Implicit roles cause quality variance | Situational | B |
+| # | Pattern | Weight | Evidence | Effort |
+|---|---------|--------|----------|--------|
+| 01 | Attention Budget | Foundational | B | M |
+| 02 | Context Gate | Foundational | B | M |
+| 03 | Cognitive Profile | Foundational | B | M |
+| 04 | Wave Scheduler | Situational | B | S |
+| 05 | Assumption Mutation | Situational | B | L |
+| 06 | Experience Distillation | Advanced | B | M |
+| 07 | File-Based I/O | Foundational | B | S |
+| 08 | Template-Driven Role | Situational | B | S |
 
-Each pattern includes:
-- **Anti-Pattern** section (learning from GoF's weakness of not explaining "when NOT to use")
-- **Failure Catalog** with real examples
-- **Interaction Catalog** documenting how patterns combine
-- **Evidence Level** (A: quantitatively verified, B: multi-project confirmed, C: theoretical, D: hypothesis)
+Each pattern includes Anti-Pattern section, Failure Catalog, Interaction Catalog, and Evidence Level (A/B/C/D).
 
 **5 cqlint Rules**:
 
-| Rule | Name | Detects |
-|------|------|---------|
-| CQ001 | attention-budget-missing | Task definition lacks token budget |
-| CQ002 | context-contamination-risk | No filtering between agent stages (Context Gate violation) |
-| CQ003 | generic-persona | Persona undefined or too generic |
-| CQ004 | no-mutation-critical | High-risk task without mutation step |
-| CQ005 | learning-disabled | Learning mechanism absent |
+| Rule | Name | Detects | Severity |
+|------|------|---------|----------|
+| CQ001 | attention-budget-missing | Task definition lacks token budget | WARNING |
+| CQ002 | context-contamination-risk | No filtering between agent stages | ERROR |
+| CQ003 | generic-persona | Persona undefined or too generic | WARNING |
+| CQ004 | no-mutation-critical | High-risk task without mutation step | ERROR |
+| CQ005 | learning-disabled | Learning mechanism absent | WARNING |
 
 **CQ Benchmark v0.1 — 4-Axis Specification**:
 
@@ -120,34 +127,73 @@ Each pattern includes:
 | Document Integrity Score | Mutation Kill rate, contradiction count, ambiguity score |
 | Evolution Score | Pattern compliance rate, learning accumulation rate, recurring issue rate |
 
-**Milestones**:
+#### Tasks
 
-| # | Milestone | Definition of Done |
-|---|-----------|-------------------|
-| M1.1 | Pattern catalog published | 8 patterns documented in GoF format with Anti-Patterns and Evidence Levels |
-| M1.2 | cqlint functional | `cqlint check .` runs on any project directory and reports violations |
-| M1.3 | "30-second experience" working | A new user can run `cqlint check .` and see actionable output within 30 seconds |
-| M1.4 | Benchmark spec complete | 4-axis measurement specification documented with calculation methods |
+| Task ID | Task | Effort | Dependencies |
+|---------|------|:------:|-------------|
+| Patterns 01-04 | Write 4 Foundational patterns | 2M + 1S = ~1,100 lines | None |
+| Patterns 05-08 | Write 4 Situational/Advanced patterns | 1L + 2M + 1S = ~1,700 lines | Patterns 01-04 |
+| Pattern index | `patterns/README.md` with relationship diagram | S | All patterns |
+| cqlint scaffold | Entry point, parser, output modules | S | None |
+| cqlint rules | 5 rules + test fixtures | 3S + 2M | Patterns 01-04, scaffold |
+| cqlint adapters | crew YAML + generic YAML adapters | 2S | scaffold |
+| Benchmark spec | 4-axis specification with formulas | 2S + 2M | Patterns 01-04 |
+| Integration | Cross-references, integration test | S | All above |
+
+**Estimated total**: ~5,700 lines (Markdown + Bash)
+
+#### Milestones
+
+| # | Milestone | Definition of Done | Depends On |
+|---|-----------|-------------------|------------|
+| **M1.1** | Pattern catalog core | 4 Foundational patterns written and reviewed | None |
+| **M1.2** | Pattern catalog complete | All 8 patterns + index with relationship diagram | M1.1 |
+| **M1.3** | cqlint scaffold | Entry point, parser, output modules working | None |
+| **M1.4** | cqlint rules implemented | All 5 rules detecting violations in test fixtures | M1.1, M1.3 |
+| **M1.5** | cqlint 30-second experience | `cqlint check .` produces useful output in < 30s | M1.4 |
+| **M1.6** | CQ Benchmark spec | 4-axis specification complete with formulas and worked examples | M1.1 |
+| **M1.7** | Phase 1 integration test | All components work together, README updated | M1.2, M1.5, M1.6 |
+
+**Parallel Execution**: M1.1 and M1.3 can start simultaneously (no dependencies).
+
+#### Completion Criteria
+
+| # | Criterion | Verification |
+|---|-----------|-------------|
+| P1-1 | 8 pattern files pass all completion criteria (PC-1 through PC-8) | Checklist review per pattern |
+| P1-2 | `cqlint check .` runs on any directory and produces output | Manual test on 3 project types |
+| P1-3 | All 5 cqlint rules pass their test fixtures | `run_tests.sh` exits 0 |
+| P1-4 | 30-second experience validated | Timed test: clone → run → useful output in < 30s |
+| P1-5 | CQ Benchmark spec covers all 4 axes with formulas | Review for completeness |
+| P1-6 | All documentation in English, arXiv-compatible format | Review for publishability |
+| P1-7 | No placeholder text remaining | `grep -r "TODO\|TBD\|PLACEHOLDER"` returns zero |
+
+#### Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Pattern misuse epidemic (Strategy Hell) | Undermines CQE credibility | Anti-Patterns + Failure Catalog + Weight classification from v0.1 |
+| "8 patterns = too many" | Slows adoption | Weight classification: "Start with 3 Foundational, grow to 8" |
+| Evidence Level B only (no quantitative validation) | Academic skepticism | Disclose Evidence Levels; define upgrade path to A; arXiv-compatible format |
+| cqlint false positives | Tool rejection | Conservative defaults (WARNING not ERROR for uncertain detections) |
+| Scope creep delays Phase 2 | Schedule slip | Strict Phase 1 = specification + tooling scaffold. No application-layer code |
+
+> **Full risk table with likelihood**: [phases/phase-1-foundation.md §4.5](phases/phase-1-foundation.md)
 
 **Dependencies**: None (this is the foundation)
 
-**Estimated Size**: **M** (Medium) — primarily documentation + scripting
+**Estimated Size**: **M** (Medium)
 
 **Entry Criteria**: None
-
-**Success Criteria**:
-- 8 patterns fully documented with Anti-Patterns
-- cqlint detects all 5 rule violations in test fixtures
-- CQ Benchmark specification reviewed and baselined
 
 **Hypotheses to Validate**:
 
 | # | Hypothesis | Method | Success Threshold |
 |---|-----------|--------|-------------------|
-| H1 | Pattern vocabulary improves design discussions | 5 AI engineers review with/without catalog | 30% faster discussion OR 50% more issues found |
-| H2 | cqlint detects quality issues pre-execution | Analyze 50 past execution logs | 40%+ of failures were pre-detectable |
+| H1 | Pattern vocabulary improves design discussions | 5 AI engineers review with/without catalog | 30% faster OR 50% more issues found |
+| H2 | cqlint detects quality issues pre-execution | Analyze 50 past execution logs | 40%+ failures pre-detectable |
 | H3 | Patterns apply across frameworks | Test on LangGraph, CrewAI, raw Task tool | Quality improves on all 3 |
-| H4 | Anti-Patterns reduce pattern misuse by 50%+ | Compare misuse rates with/without Anti-Pattern docs | 50%+ reduction |
+| H4 | Anti-Patterns reduce pattern misuse by 50%+ | Compare misuse rates with/without docs | 50%+ reduction |
 
 ---
 
@@ -157,69 +203,111 @@ Each pattern includes:
 
 **Purpose**: Build MutaDoc — the first tool that applies software mutation testing to documents. Prove that CQE principles create value beyond the AI engineering community by reaching lawyers, researchers, and quality managers.
 
+> **Full detail**: [phase-2-mutadoc.md](phases/phase-2-mutadoc.md)
+
 **Deliverables**:
 
 | # | Deliverable | Description |
 |---|-------------|-------------|
 | 1 | **MutaDoc v0.1** | Document mutation testing engine with 5 strategies + Mutation-Driven Repair + Regression Mutation |
-| 2 | **CQ Benchmark applied** | First application of CQ Benchmark to validate MutaDoc hypotheses |
+| 2 | **12 document type presets** | Strategy presets for contracts, API specs, academic papers, policy docs, and 8 more |
+| 3 | **CQ Benchmark applied** | First application of CQ Benchmark to validate MutaDoc hypotheses |
 
 **5 Mutation Strategies**:
 
-| Strategy | Description |
-|----------|-------------|
-| Contradiction | Alter a clause and detect if other clauses become contradictory |
-| Ambiguity | Replace vague modifiers with extreme values to expose meaninglessness |
-| Deletion | Remove a clause and measure structural impact (zero impact = dead clause) |
-| Inversion | Reverse assumptions/claims and measure argument robustness |
-| Boundary | Mutate parameters (numbers, deadlines) to estimate conclusion robustness |
+| Strategy | Description | Size |
+|----------|-------------|:----:|
+| Contradiction | Alter a clause and detect cascading contradictions | M |
+| Ambiguity | Replace vague modifiers with extremes to expose meaninglessness | M |
+| Deletion | Remove a clause and measure structural impact (zero = dead clause) | S |
+| Inversion | Reverse assumptions/claims and measure argument robustness | M |
+| Boundary | Mutate parameters (numbers, deadlines) to test conclusion robustness | S |
 
 **Key Innovation — Mutation-Driven Repair**:
 - **Repair Draft**: Auto-generate fix suggestions for each Critical finding
 - **Repair Impact Analysis**: Predict cascading effects of proposed fixes
-- **Regression Mutation**: Re-apply mutation to repaired text to verify no new vulnerabilities were introduced
-- This mirrors ESLint's auto-fix revolution: "detect + repair" achieves 10x adoption over "detect only"
+- **Regression Mutation**: Re-apply mutation to repaired text to verify no new vulnerabilities
+- Mirrors ESLint's auto-fix revolution: "detect + repair" achieves 10x adoption over "detect only"
 
 **3 Adversarial Personas**:
 
-| Persona | Role |
-|---------|------|
-| `adversarial_reader` | Malicious reader looking for exploitable ambiguity |
-| `opposing_counsel` | Opposing lawyer seeking contract weaknesses |
-| `naive_implementer` | Developer who implements everything literally |
+| Persona | Role | Strategy Affinity |
+|---------|------|-------------------|
+| `adversarial_reader` | Malicious reader seeking exploitable ambiguity | Ambiguity, Boundary |
+| `opposing_counsel` | Opposing lawyer seeking contract weaknesses | Contradiction, Deletion |
+| `naive_implementer` | Developer who implements everything literally | Ambiguity, Inversion |
 
-**Milestones**:
+#### Tasks
 
-| # | Milestone | Definition of Done |
-|---|-----------|-------------------|
-| M2.1 | 5 strategies implemented | Each strategy produces a mutation test report on sample documents |
-| M2.2 | Mutation-Driven Repair functional | Repair drafts generated for Critical findings with regression mutation |
-| M2.3 | "30-second experience" working | Feed a README → get "3 ambiguous expressions found" within 30 seconds |
-| M2.4 | 10+ document type presets | Strategy presets for contracts, API specs, academic papers, policy docs, and 6+ more |
-| M2.5 | CQ Benchmark validation | MutaDoc hypotheses validated using CQ Benchmark metrics |
+| Area | Task Count | Size |
+|------|:----------:|:----:|
+| Strategy S1 (Contradiction) | 4 tasks | M |
+| Strategy S2 (Ambiguity) | 4 tasks | M |
+| Strategy S3 (Deletion) | 4 tasks | S |
+| Strategy S4 (Inversion) | 4 tasks | M |
+| Strategy S5 (Boundary) | 4 tasks | S |
+| Persona P1 (Adversarial Reader) | 3 tasks | M |
+| Persona P2 (Opposing Counsel) | 3 tasks | M |
+| Persona P3 (Naive Implementer) | 3 tasks | M |
+| Mutation-Driven Repair | 6 tasks | L |
+| Document Type Presets | 5 tasks | M |
+| **Total** | **40 tasks** | **L** |
 
-**Dependencies**: Phase 1 (CQE Patterns provide the theoretical foundation — especially the Assumption Mutation pattern)
+> **Full task breakdown**: [phases/phase-2-mutadoc.md §1–4](phases/phase-2-mutadoc.md)
 
-**Estimated Size**: **L** (Large) — multiple strategies, repair engine
+#### Milestones
+
+| # | Milestone | Definition of Done | Depends On |
+|---|-----------|-------------------|------------|
+| **M2.1** | 5 strategies implemented | All 5 produce mutation test reports on sample documents; 2+ test fixtures each | Phase 1 M1.1 |
+| **M2.2** | Mutation-Driven Repair functional | Repair drafts for Critical findings; regression mutation validates repairs; diff view renders | M2.1 |
+| **M2.3** | "30-second experience" working | `mutadoc test README.md` returns findings within 30 seconds | M2.1 |
+| **M2.4** | 12 document type presets | All presets functional; auto-detection works for core 4 types | M2.1 |
+| **M2.5** | CQ Benchmark validation | Hypotheses H1-H5 validated using CQ Benchmark metrics | M2.1, M2.2, Phase 1 M1.6 |
+| **M2.6** | Mutation Kill Score | Numerical document quality score calculated and displayed | M2.1 |
+
+#### Completion Criteria
+
+| # | Criterion | Validation |
+|---|-----------|-----------|
+| 1 | All 5 strategies produce correct reports on test fixtures | Automated test runner |
+| 2 | All 3 personas produce actionable analysis | Human review per persona |
+| 3 | Repair drafts generated for 100% of Critical findings | Automated check |
+| 4 | Regression Mutation detects ≥ 1 repair-introduced issue | Automated detection |
+| 5 | 10+ presets available and functional | Automated run on sample inputs |
+| 6 | "30-second experience" within 30s on 100-line document | Timed test |
+| 7 | Mutation Kill Score displayed in output | Automated check |
+| 8 | CQ Benchmark validation complete for H1-H5 | Review validation report |
+
+#### Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| "Just ask ChatGPT to review" perception | Dismissed as unnecessary | "30-second experience" shows result ChatGPT missed |
+| Repair suggestions unusable | Seen as noise | Target 30%+ "use as-is" rate; diff view for evaluation |
+| Document type coverage too narrow | Perceived as niche | Launch with 12 presets + custom preset capability |
+| Slow execution (5+ minutes) | UX indistinguishable from ChatGPT | Progress in 5s; Critical first-report in 2 minutes |
+| High false positive rate | User trust erodes | Per-preset severity calibration; confidence scores |
+
+> **Full risk table**: [phases/phase-2-mutadoc.md §5.7](phases/phase-2-mutadoc.md)
+
+**Dependencies**: Phase 1 (CQE Patterns provide theoretical foundation)
+
+**Estimated Size**: **L** (Large)
 
 **Entry Criteria**:
-- CQE Patterns v0.1 published (M1.1 complete)
-- cqlint v0.1 functional (M1.2 complete)
-
-**Success Criteria**:
-- Detects issues in contracts, specs, and papers that human reviewers miss
-- Mutation-Driven Repair generates actionable fix suggestions
-- Non-technical users (lawyers, researchers) can use it without AI knowledge
+- CQE Patterns v0.1 published (M1.1)
+- cqlint v0.1 functional (M1.2)
 
 **Hypotheses to Validate**:
 
 | # | Hypothesis | Method | Success Threshold |
 |---|-----------|--------|-------------------|
-| H1 | MutaDoc detects issues human reviewers miss | Test set of 5 contracts with known issues, compare with 2 lawyers | 50%+ of missed issues detected |
-| H2 | Strategies generalize across document types | Apply same 5 strategies to contracts, specs, and papers | 1+ Critical found in all 3 types |
-| H3 | Mutation mechanism ports from code to documents | Script adversarial review approach, apply to new docs | Quality matches manual adversarial review |
-| H4 | 30%+ of repair suggestions are directly usable | Human evaluation of repair drafts | 30%+ "use as-is" rate |
-| H5 | Regression Mutation catches new vulnerabilities | Re-mutate repaired documents | 15%+ detection rate of new issues |
+| H1 | MutaDoc detects issues human reviewers miss | 5 contracts with known issues, compare with 2 lawyers | 50%+ of missed issues detected |
+| H2 | Strategies generalize across document types | Same 5 strategies on contracts, specs, papers | 1+ Critical in all 3 types |
+| H3 | Mutation mechanism ports from code to docs | Script adversarial approach, apply to new docs | Quality matches manual review |
+| H4 | 30%+ of repair suggestions directly usable | Human evaluation of 20 repair drafts | 30%+ "use as-is" rate |
+| H5 | Regression Mutation catches new vulnerabilities | Re-mutate 10 repaired documents | 15%+ detection rate |
 
 ---
 
@@ -229,85 +317,110 @@ Each pattern includes:
 
 **Purpose**: Package CQE Patterns, cqlint, and MutaDoc as an MCP Server that any Claude Code user can install with a single command. Add telemetry to create a self-improving ecosystem.
 
+> **Full detail**: [phase-3-mcp-server.md](phases/phase-3-mcp-server.md)
+
 **Deliverables**:
 
 | # | Deliverable | Description |
 |---|-------------|-------------|
-| 1 | **CQ MCP Server v0.1** | MCP server providing mutadoc + cqlint + learn as tools |
-| 2 | **Hooks integration** | PreToolUse / TaskCompleted hooks for automatic CQ checks |
-| 3 | **Telemetry baseline** | Local-only usage data collection for ecosystem evolution |
+| 1 | **CQ MCP Server v0.1** | MCP server with 6 core tools + MutaDoc wrapper |
+| 2 | **Hooks integration** | PreToolUse / PostToolUse / Notification hooks |
+| 3 | **Telemetry baseline** | Local-only usage data collection + CQ Health Dashboard |
 
-**MCP Tools**:
+**6 MCP Tools**:
 
-| Tool | Function |
-|------|----------|
-| `cq_engine__decompose` | Auto-decompose tasks within cognitive budget |
-| `cq_engine__gate` | Pass only needed files to each subtask (context hygiene) |
-| `cq_engine__persona` | Select optimal persona for subtask characteristics |
-| `cq_engine__mutate` | Auto-mutation test on refactoring results |
-| `cq_engine__cqlint` | Static cognitive quality verification |
-| `cq_engine__mutadoc` | Document mutation testing (Phase 2 integration) |
-| `cq_engine__learn` | Accumulate learning from execution |
-| `cq_engine__benchmark` | Run CQ Benchmark measurements |
+| Tool | Function | Effort | Priority |
+|------|----------|:------:|:--------:|
+| `cq_engine__decompose` | Task decomposition within attention budgets | M | High |
+| `cq_engine__gate` | Context filtering for subtasks | M | High |
+| `cq_engine__persona` | Optimal persona selection | S | Medium |
+| `cq_engine__mutate` | Mutation testing for robustness | L | High |
+| `cq_engine__learn` | Knowledge accumulation across sessions | M | Medium |
+| `cq_engine__cqlint` | MCP wrapper for cqlint | S | High |
 
-**MCP Resources**:
+**Additional wrapper tools**: `cq_engine__mutadoc` (Phase 2 integration), `cq_engine__benchmark` (measurement)
 
-| Resource | Content |
-|----------|---------|
-| `cq_engine://patterns` | Pattern catalog (read-only) |
-| `cq_engine://learned` | Accumulated learning data |
-
-**Hooks Integration**:
+**3 Hooks**:
 
 | Hook | Trigger | Action |
 |------|---------|--------|
-| PreToolUse | Before Edit/Write | Context hygiene check |
-| TaskCompleted | After Task completion | Auto-mutation test |
+| PreToolUse | Before Edit/Write | Context hygiene check via `gate` |
+| PostToolUse | After Task completion | Auto-mutation via `mutate` |
+| Notification | Task outcome | Auto-learning via `learn` |
 
-**Telemetry (All Local, Privacy-First)**:
+**Telemetry** (All Local, Privacy-First): Usage frequency, failure patterns, quality improvement data, task correlation. Storage: `~/.cq-engine/telemetry/` (JSONL, auto-rotated, 90-day retention).
 
-| Data Collected | Purpose |
-|---------------|---------|
-| Usage frequency | Identify most valuable patterns |
-| Failure patterns | Measure rule effectiveness |
-| Quality improvement data | Measure mutation strategy effectiveness |
-| Task characteristic correlation | Improve automatic recommendations |
+#### Tasks
 
-**CTL Revival Checkpoint**: If by Phase 3, CQE Patterns have reached v0.2+ and community feedback indicates demand for a declarative task language, evaluate reviving CTL as an optional layer. CTL's static analysis capabilities (budget overflow detection, gate inconsistency detection) could complement cqlint for power users.
+| Area | Task Count | Effort |
+|------|:----------:|:------:|
+| MCP Tools (6 core) | 6 | 2S + 3M + 1L |
+| Hooks | 5 | 4S + 1M |
+| Telemetry | 7 | 3S + 3M |
+| **Total** | **18 tasks** | **L** |
 
-**Milestones**:
+> **Full task breakdown**: [phases/phase-3-mcp-server.md §2–4](phases/phase-3-mcp-server.md)
 
-| # | Milestone | Definition of Done |
-|---|-----------|-------------------|
-| M3.1 | MCP server installable | `claude mcp add cq-engine` works and provides all tools |
-| M3.2 | Hooks auto-trigger | CQ checks run automatically on Edit/Write and Task completion |
-| M3.3 | Telemetry collecting | Local usage data accumulating for ecosystem feedback |
-| M3.4 | Feedback loop v1 | First telemetry-driven pattern/rule update cycle completed |
+#### Milestones
+
+| # | Milestone | Definition of Done | Depends On |
+|---|-----------|-------------------|------------|
+| **M3.1** | MCP server installable | `claude mcp add cq-engine` works; all 6 core tools respond | Phase 1 (M1.1, M1.2) |
+| **M3.2** | Core tools functional | All 6 tools pass test suites; Bash/CLI fallbacks work for every tool | M3.1 |
+| **M3.3** | MutaDoc integration | `cq_engine__mutadoc` wraps MutaDoc v0.1 | Phase 2 (M2.1, M2.2) |
+| **M3.4** | Hooks auto-trigger | PreToolUse and PostToolUse hooks installed and functioning | M3.2 |
+| **M3.5** | Telemetry collecting | Local data accumulating; all tools emit events; aggregation pipeline operational | M3.2 |
+| **M3.6** | CQ Health Dashboard | `cq_engine://health` returns 4-axis scores; CLI `cq-engine report` generates report | M3.5 |
+| **M3.7** | Feedback loop v1 | First telemetry-driven update: identify most violated pattern → update Anti-Pattern → adjust rule threshold | M3.5, M3.6 |
+
+**Parallelization**: After M3.2, hooks (M3.4), telemetry (M3.5), and MutaDoc integration (M3.3) can proceed in parallel.
+
+**CTL Revival Checkpoint**: Evaluated after M3.4, before M3.7. See [Phase 5 (CTL)](#phase-5-cross-cutting-ctl--cognitive-task-language).
+
+#### Completion Criteria
+
+| # | Criterion | Verification |
+|---|-----------|-------------|
+| 1 | `claude mcp add cq-engine` installs successfully | Clean environment test |
+| 2 | All 6 core tools + mutadoc wrapper pass tests | 30+ test cases |
+| 3 | Bash/CLI fallback exists for every MCP tool | Each tool testable without MCP |
+| 4 | Hooks auto-trigger on Edit/Write/Task | Integration test |
+| 5 | Telemetry accumulates with zero network calls | Network monitor verification |
+| 6 | CQ Health Dashboard returns 4-axis scores | Report generation test |
+| 7 | First feedback loop cycle completed | At least 1 telemetry-driven rule update |
+| 8 | No Python dependency leaks outside mcp-server/ | Dependency audit |
+
+#### Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| Python dependency contradicts zero-infra | Philosophy inconsistency | Bash/CLI fallback for every MCP tool; document exception |
+| Telemetry privacy concerns | User distrust | All telemetry strictly local; no network calls; opt-out mechanism |
+| MCP SDK API changes | Server breaks on update | Pin to stable SDK version; compatibility test suite |
+| Hook performance overhead | Slows sessions | Strict timeouts (5s PreToolUse, 30s PostToolUse) |
+| Agent Teams competition | Direct competitor | Prepare CQE as Agent Teams CLAUDE.md injection path |
+
+> **Full risk table**: [phases/phase-3-mcp-server.md §5.5](phases/phase-3-mcp-server.md)
 
 **Dependencies**: Phase 1 (patterns + cqlint) and Phase 2 (MutaDoc)
 
-**Estimated Size**: **L** (Large) — Python MCP SDK, hooks integration, telemetry
+**Estimated Size**: **L** (Large)
 
 **Entry Criteria**:
 - CQE Patterns v0.1 stable
 - cqlint v0.1 validated
-- MutaDoc v0.1 functional (M2.1 + M2.2 complete)
+- MutaDoc v0.1 functional (M2.1 + M2.2)
 
-**Success Criteria**:
-- MCP installs exceed direct framework users by 5x
-- Claude Code autonomously uses CQ tools on 70%+ of complex tasks
-- Telemetry-to-pattern-update feedback loop operational
+**Note on Infrastructure Exception**: CQ MCP Server is the **only** component requiring Python (MCP SDK). A Bash/CLI fallback must always exist for every MCP tool.
 
 **Hypotheses to Validate**:
 
 | # | Hypothesis | Method | Success Threshold |
 |---|-----------|--------|-------------------|
-| H1 | MCP delivery reaches 10x more users than framework adoption | Compare MCP installs vs framework users | 5x+ install ratio |
-| H2 | Claude Code autonomously uses CQ tools appropriately | Test 10 task types for autonomous usage | 70%+ autonomous usage on complex tasks |
-| H3 | MCP integration improves quality for non-cq-engine users | Same-task quality comparison with/without cq-engine | 20%+ quality improvement |
-| H4 | Telemetry-based recommendations outperform static rules | Compare adoption rates | 30%+ higher adoption |
-
-**Note on Infrastructure Exception**: CQ MCP Server is the **only component** requiring Python (via Python MCP SDK). All other components follow the zero-infrastructure principle. A Bash/CLI fallback must always be available for every MCP tool.
+| H1 | MCP delivery reaches 10x more users | Compare installs vs framework users | 5x+ install ratio |
+| H2 | Claude Code autonomously uses CQ tools | 10 task types autonomous usage test | 70%+ on complex tasks |
+| H3 | MCP improves quality for non-cq-engine users | Same-task quality comparison | 20%+ improvement |
+| H4 | Telemetry recommendations outperform static rules | Compare adoption rates | 30%+ higher adoption |
 
 ---
 
@@ -316,6 +429,8 @@ Each pattern includes:
 > *"What ChatGPT cannot do by principle: truly independent multi-perspective analysis."*
 
 **Purpose**: Build ThinkTank — an anti-anchoring decision engine that uses independent-context parallel analysis to produce genuinely diverse perspectives. Integrate it into the CQ MCP Server to complete the ecosystem.
+
+> **Full detail**: [phases/phase-4-thinktank.md](phases/phase-4-thinktank.md)
 
 **Deliverables**:
 
@@ -329,123 +444,223 @@ Each pattern includes:
 
 | Wave | Name | Description |
 |------|------|-------------|
-| Wave 1 | Independent Analysis | 8 personas analyze in isolated contexts (parallel) |
-| Wave 2 | Cross-Critique | Each persona critiques others' analyses |
-| Wave 3 | Synthesis | Integrate all analyses into final judgment + risk matrix |
+| Wave 1 | Independent Analysis | 8 personas analyze in isolated contexts (parallel, zero cross-contamination) |
+| Wave 2 | Cross-Critique | Each persona critiques others' analyses; generates Contradiction Heatmap data |
+| Wave 3 | Synthesis | Integrate into Decision Brief with risk matrix + Anchoring Visibility Score |
 
-**Persona Framework**:
+**8 Personas**:
 
-| Category | Personas |
-|----------|---------|
-| Business | CFO, CTO, CMO, Investor |
-| Stakeholders | Customer, Employee, Regulator |
-| Meta | Devil's Advocate (mandatory) |
-| Custom | User-defined personas |
+| # | Persona | Category | Key Concern |
+|---|---------|----------|-------------|
+| P1 | CFO | Business | Financial viability, ROI, cost structure |
+| P2 | CTO | Business | Technical feasibility, scalability, tech debt |
+| P3 | CMO | Business | Market fit, competitive positioning |
+| P4 | Investor | Business | Valuation, exit potential, capital efficiency |
+| P5 | Customer | Stakeholder | Usability, value perception, pain points |
+| P6 | Employee | Stakeholder | Workload impact, skill requirements, morale |
+| P7 | Regulator | Stakeholder | Legal compliance, data privacy, liability |
+| P8 | Devil's Advocate | Meta | Assumptions challenged, worst-case scenarios |
 
 **Key Innovations**:
-- **Anchoring Visibility Score**: Estimates how much anchoring bias would have affected a sequential analysis, quantifying the value of parallel execution
-- **Contradiction Heatmap**: 8x8 matrix visualizing inter-persona disagreements — structurally identifying where debate is needed
-- **Parameter Mutation Test**: Mutate decision parameters for sensitivity analysis ("What if 10%? 20%? Over 3 years?")
-- **Decision Replay**: Re-analyze past decisions to continuously improve judgment quality
+- **Anchoring Visibility Score (AVS)**: `(PSS_sequential - PSS_parallel) / PSS_sequential × 100` — quantifies bias eliminated by parallel execution
+- **Contradiction Heatmap**: 8×8 matrix visualizing inter-persona disagreements
+- **Parameter Mutation Test**: Sensitivity analysis on decision parameters
+- **Decision Replay**: Re-analyze past decisions for continuous improvement
+- **Quick Mode**: 3-persona subset (CFO + CTO + Devil's Advocate) for rapid analysis
 
-**Milestones**:
+#### Tasks
 
-| # | Milestone | Definition of Done |
-|---|-----------|-------------------|
-| M4.1 | 3-Wave pipeline functional | Wave 1 → Wave 2 → Wave 3 produces a Decision Brief |
-| M4.2 | Anchoring Visibility Score implemented | Score quantifies parallel vs sequential bias difference |
-| M4.3 | MCP integration complete | `cq_engine__thinktank` tool available via MCP Server |
-| M4.4 | Feedback loop operational | Telemetry data drives pattern catalog and strategy updates |
+| Area | Task Count | Size |
+|------|:----------:|:----:|
+| Persona templates (8 + custom + quick mode) | 10 | 9S + 1M |
+| Wave 1 design + orchestration | 2 | 2M |
+| Wave 2 design + heatmap + orchestration | 3 | 2M + 1S |
+| Wave 3 synthesis + brief format + orchestration | 3 | 1L + 2M |
+| AVS specification + calculator + visualization | 5 | 3M + 2S |
+| MCP integration + CLI + telemetry + tests | 5 | 2L + 1M + 2S |
+| **Total** | **30 tasks** | **(12S + 13M + 5L)** |
 
-**Dependencies**: Phase 3 (MCP Server provides the distribution channel)
+> **Full task breakdown**: [phases/phase-4-thinktank.md §1–4](phases/phase-4-thinktank.md)
 
-**Estimated Size**: **L** (Large) — 8 personas, 3-Wave pipeline, MCP integration
+#### Milestones
+
+| # | Milestone | Definition of Done | Depends On |
+|---|-----------|-------------------|------------|
+| **M4.1** | 3-Wave pipeline functional | Wave 1→2→3 produces a complete Decision Brief | M3.1 |
+| **M4.2** | 8 persona templates complete | All 8 produce domain-appropriate analyses on 3 test decisions | None (internal) |
+| **M4.3** | AVS implemented | Calculator produces valid scores; sequential baseline works | M4.1 |
+| **M4.4** | Contradiction Heatmap functional | 8×8 heatmap renders in Decision Brief | M4.1 |
+| **M4.5** | Parameter Mutation operational | Sensitivity analysis for numeric parameter variations | M4.1 |
+| **M4.6** | Quick mode (3-persona) functional | Decision Brief in < 2 minutes | M4.1, M4.2 |
+| **M4.7** | MCP integration complete | `cq_engine__thinktank` available via MCP Server | M3.1, M4.1 |
+| **M4.8** | Bash/CLI fallback validated | `thinktank.sh` produces output equivalent to MCP tool | M4.7 |
+| **M4.9** | Decision Replay functional | Re-analysis of past decisions produces improved quality | M4.1 |
+| **M4.10** | Feedback loop operational | Telemetry drives ≥ 1 pattern/persona update | M3.5, M4.7 |
+| **M4.11** | "30-second experience" working | 8 independent perspectives within 30 seconds | M4.1, M4.6 |
+
+#### Completion Criteria
+
+| # | Criterion | Validation |
+|---|-----------|-----------|
+| 1 | All 11 milestones achieved | Checklist review |
+| 2 | Full mode produces valid Decision Briefs for 5 test decisions | Quality review |
+| 3 | Quick mode in < 2 minutes | Timing measurement |
+| 4 | AVS > 0% on all test decisions | Automated calculation |
+| 5 | `cq_engine__thinktank` callable via MCP | Integration tests |
+| 6 | CLI produces equivalent output to MCP tool | Diff comparison |
+| 7 | H1 validated: parallel diversity ≥ 1.5× sequential | Statistical test (p < 0.05) |
+| 8 | H2 validated: Wave 2 reduces blind spots ≥ 30% | Before/after comparison |
+| 9 | ≥ 1 feedback-loop cycle completed | Audit trail |
+
+#### Risks
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| "Multi-perspective = SWOT/Six Hats" perception | Dismissed as derivative | Position as "Anti-Anchoring Engine"; lead with AVS, not "8 perspectives" |
+| 8 personas too expensive (API costs) | Prohibitive for casual use | 3-persona quick mode; full mode for important decisions |
+| AVS methodology unvalidated | Core differentiator unproven | Validate with statistical rigor (20+ decisions) before marketing |
+| Slow execution (>5 min full mode) | UX issue | Progress display in 30s; quick mode for immediacy |
+| Wave 2 degenerates into agreement | Lost value | Devil's Advocate mandatory; critique template requires ≥ 2 disagreements |
+
+> **Full risk table**: [phases/phase-4-thinktank.md §5.6](phases/phase-4-thinktank.md)
+
+**Dependencies**: Phase 3 (MCP Server provides distribution channel)
+
+**Estimated Size**: **L** (Large)
 
 **Entry Criteria**:
-- CQ MCP Server v0.1 operational (M3.1 + M3.2 complete)
+- CQ MCP Server v0.1 operational (M3.1 + M3.2)
 - Distribution channel validated
-
-**Success Criteria**:
-- Parallel analysis produces 1.5x+ more diverse perspectives than sequential
-- Wave 2 cross-critique reduces blind spots by 30%+
-- ThinkTank detects major failure factors in 3/5 historical case studies (Kodak, Nokia, WeWork, etc.)
 
 **Hypotheses to Validate**:
 
 | # | Hypothesis | Method | Success Threshold |
 |---|-----------|--------|-------------------|
-| H1 | Parallel analysis is more diverse than sequential | ThinkTank (parallel) vs ChatGPT ("analyze from 8 perspectives") | 1.5x+ perspective diversity score |
-| H2 | Wave 2 cross-critique improves quality | Wave 1 only vs Wave 1+2 comparison | 30%+ blind spot reduction |
-| H3 | ThinkTank retroactively detects past decision failures | Analyze Kodak, Nokia, WeWork, etc. | 3/5+ major factors detected |
-| H4 | Sequential analysis shows anchoring correlated with generation order; parallel shows zero | Measure perspective similarity vs generation order | Positive correlation (sequential), zero (parallel) |
+| H1 | Parallel analysis more diverse than sequential | ThinkTank vs ChatGPT "8 perspectives" | 1.5×+ diversity score |
+| H2 | Wave 2 cross-critique improves quality | Wave 1 only vs Wave 1+2 | 30%+ blind spot reduction |
+| H3 | Retroactively detects past decision failures | Analyze Kodak, Nokia, WeWork, etc. | 3/5+ factors detected |
+| H4 | Sequential shows anchoring; parallel shows zero | Similarity vs generation order | Positive (sequential), zero (parallel) |
 
 ---
 
-## 4. Dependency Diagram
+### Phase 5 (Cross-Cutting): CTL — Cognitive Task Language
 
-### Phase Dependencies
+> **Status**: Conditional — activated only if revival conditions are met at Phase 3
+
+**Purpose**: If the CQE ecosystem outgrows YAML-based cqlint, provide a dedicated type-safe language for describing cognitive tasks with static analysis capabilities beyond what YAML rules can express.
+
+> **Full detail**: [phases/phase-5-ctl.md](phases/phase-5-ctl.md)
+
+**Revival Conditions** (ALL must be met at Phase 3 checkpoint):
+
+| # | Criterion | Threshold |
+|---|-----------|-----------|
+| RC-1 | CQE Patterns maturity | v0.2+ with ≥ 12 patterns, ≥ 3 at Evidence Level A |
+| RC-2 | cqlint rule saturation | ≥ 15 rules AND ≥ 3 "can't express in YAML" complaints |
+| RC-3 | Community demand | ≥ 10 unique users requesting DSL features |
+| RC-4 | Reproducibility gap | ≥ 5 documented cases of quality inconsistency from informal task definition |
+
+**Revival Decision**: All 4 met → REVIVE | 3/4 → CONDITIONAL (MVP grammar only) | ≤ 2 → DEFER
+
+**MVP Grammar**: 5 keywords (`task`, `wave`, `gate`, `persona`, `invariant`), formal BNF/PEG specification.
+
+**CTL-Only Capabilities** (what YAML rules cannot do):
+
+| Rule | Name | Description |
+|------|------|-------------|
+| CQ006 | budget-overflow | Total subtask budgets exceed parent task budget |
+| CQ007 | gate-inconsistency | Downstream references data excluded by upstream gate |
+| CQ008 | dependency-cycle | Circular dependency in wave definitions |
+| CQ009 | unused-invariant | Invariant condition trivially satisfied |
+
+**Milestones** (conditional, post-revival):
+
+| # | Milestone | Depends On |
+|---|-----------|------------|
+| **M5.1** | Grammar spec complete + 20 retrospective `.ctl` files | Revival GO decision |
+| **M5.2** | Parser and type checker functional | M5.1 |
+| **M5.3** | cqlint CTL adapter integrated | M5.2 |
+| **M5.4** | Runtime functional | M5.2 |
+| **M5.5** | Sample library + documentation | M5.4 |
+| **M5.6** | Usability validated (3 devs productive in 30 min) | M5.5 |
+| **M5.7** | YAML-to-CTL converter | M5.2 |
+
+**Key design decision**: YAML and CTL coexist. CTL is opt-in for power users. Both produce the same execution plan — the difference is in pre-execution verification depth.
+
+---
+
+## 4. Cross-Phase Sections
+
+### 4.1 Cross-Phase Dependency Diagram
 
 ```
-                    ┌─────────────────────────────────────────────────┐
-                    │         CQ Benchmark (Cross-Cutting)            │
-                    │  Defined in Phase 1 → Applied from Phase 2      │
-                    └──────┬──────────────────┬───────────────────────┘
-                           │                  │
-                           ▼                  ▼
-┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
-│   PHASE 1        │    │   PHASE 2        │    │   PHASE 3        │    │   PHASE 4        │
-│   Foundation     │───▶│   Killer App     │───▶│   Distribution   │───▶│   Expansion      │
-│                  │    │                  │    │                  │    │                  │
-│ • CQE Patterns   │    │ • MutaDoc        │    │ • CQ MCP Server  │    │ • ThinkTank      │
-│ • cqlint         │    │ • Repair Engine  │    │ • Hooks          │    │ • 3-Wave Engine  │
-│ • Benchmark Spec │    │ • Benchmark Use  │    │ • Telemetry      │    │ • MCP Integration│
-└──────────────────┘    └──────────────────┘    └──────────────────┘    └──────────────────┘
-        │                                               │
-        │          CTL Revival Checkpoint ◇              │
-        │          (if Patterns v0.2+ &                  │
-        └──────────  community demand)  ─────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                         CQ BENCHMARK (Cross-Cutting)                             │
+│                  Defined in Phase 1 → Applied from Phase 2                       │
+└────────────┬──────────────────────┬──────────────────────┬──────────────────────┘
+             │                      │                      │
+             ▼                      ▼                      ▼
+┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐  ┌────────────────────┐
+│    PHASE 1         │  │    PHASE 2         │  │    PHASE 3         │  │    PHASE 4         │
+│    Foundation      │─▶│    Killer App      │─▶│    Distribution    │─▶│    Expansion       │
+│                    │  │                    │  │                    │  │                    │
+│ M1.1 Patterns core │  │ M2.1 5 strategies  │  │ M3.1 MCP install   │  │ M4.1 3-Wave pipe   │
+│ M1.2 Patterns full │  │ M2.2 Repair engine │  │ M3.2 Core tools    │  │ M4.2 8 personas    │
+│ M1.3 cqlint scaff  │  │ M2.3 30-sec exp    │  │ M3.3 MutaDoc integ │  │ M4.3 AVS           │
+│ M1.4 cqlint rules  │  │ M2.4 12 presets    │  │ M3.4 Hooks         │  │ M4.4-M4.6 Features │
+│ M1.5 30-sec exp    │  │ M2.5 Benchmark val │  │ M3.5 Telemetry     │  │ M4.7 MCP integ     │
+│ M1.6 Benchmark spec│  │ M2.6 Kill Score    │  │ M3.6 Dashboard     │  │ M4.8-M4.9 CLI+Rep  │
+│ M1.7 Integration   │  │                    │  │ M3.7 Feedback v1   │  │ M4.10 Feedback v2  │
+│                    │  │                    │  │                    │  │ M4.11 30-sec exp   │
+└────────────────────┘  └────────────────────┘  └─────────┬──────────┘  └────────────────────┘
+     │                                                     │
+     │                  CTL Revival Checkpoint ◇            │
+     │                  (after M3.4, before M3.7)          │
+     │                         │ GO                        │
+     │                         ▼                           │
+     │              ┌────────────────────┐                 │
+     │              │   PHASE 5 (Cond.)  │                 │
+     │              │   CTL/DSL          │                 │
+     │              │   M5.1-M5.7       │                 │
+     └─────────────▶│   (if revived)     │◀────────────────┘
+                    └────────────────────┘
 ```
 
-### Technical Dependencies Between Directions
+### 4.2 Technical Dependency Flow
 
 ```
 KNOWLEDGE LAYER
-  CQE Patterns ─────────── defines vocabulary for all directions
+  CQE Patterns ──────── defines vocabulary for all directions
        │
-       ├── implements ──▶ cqlint (automated pattern verification)
-       │
-       ├── applies ─────▶ MutaDoc (Assumption Mutation pattern → document mutation)
-       │
-       ├── applies ─────▶ ThinkTank (Cognitive Profile + Wave Scheduler + Assumption Mutation)
-       │
-       └── measured by ─▶ CQ Benchmark (unified metrics across all directions)
+       ├── implements ──▶ cqlint (pattern verification rules)
+       ├── applies ─────▶ MutaDoc (Assumption Mutation → document mutation)
+       ├── applies ─────▶ ThinkTank (Cognitive Profile + Wave Scheduler + Mutation)
+       └── measured by ─▶ CQ Benchmark (unified metrics)
 
 VERIFICATION LAYER
-  cqlint ◀──────────────── rules derived from patterns
-       │
-       └── integrated ──▶ CQ MCP Server (as cq_engine__cqlint tool)
+  cqlint ◀──────────── rules derived from patterns
+       └── integrated ─▶ CQ MCP Server (as cq_engine__cqlint)
 
 APPLICATION LAYER
-  MutaDoc ──────────────── standalone killer app
-       │
-       ├── shares core ──▶ ThinkTank (devil's advocate = document mutation)
-       │
-       └── integrated ──▶ CQ MCP Server (as cq_engine__mutadoc tool)
-
-  ThinkTank ────────────── standalone decision engine
-       │
-       └── integrated ──▶ CQ MCP Server (as cq_engine__thinktank tool)
+  MutaDoc ────────────── standalone killer app
+       ├── shares core ─▶ ThinkTank (devil's advocate = document mutation)
+       └── integrated ──▶ CQ MCP Server (as cq_engine__mutadoc)
+  ThinkTank ──────────── standalone decision engine
+       └── integrated ──▶ CQ MCP Server (as cq_engine__thinktank)
 
 DISTRIBUTION LAYER
-  CQ MCP Server ─────────── bundles all above + telemetry
-       │
-       └── feedback ────▶ CQE Patterns (telemetry → pattern evolution)
+  CQ MCP Server ─────── bundles all + telemetry
+       └── feedback ───▶ CQE Patterns (telemetry → pattern evolution)
 
 MEASUREMENT LAYER (Cross-Cutting)
-  CQ Benchmark ──────────── validates hypotheses for all directions
+  CQ Benchmark ──────── validates hypotheses for all directions
+
+OPTIONAL LAYER (Conditional)
+  CTL ─────────────────  type-safe task definition + static analysis
+       └── extends ────▶ cqlint (CQ006-CQ009 rules)
 ```
 
-### Circular Feedback Structure
+### 4.3 Circular Feedback Structure
 
 ```
 CQE Patterns ──▶ MutaDoc / ThinkTank / cqlint ──▶ CQ MCP Server ──▶ Users
@@ -454,11 +669,63 @@ CQE Patterns ──▶ MutaDoc / ThinkTank / cqlint ──▶ CQ MCP Server ─�
       └──── Pattern Evolution ◀── Telemetry ◀── CQ Benchmark ◀─────────┘
 ```
 
-Specific feedback paths:
-1. **CQ MCP → CQE Patterns**: Most frequently violated patterns → Anti-Pattern section reinforcement
-2. **CQ MCP → MutaDoc**: Most detected vulnerability types → Mutation strategy preset optimization
+Feedback paths:
+1. **CQ MCP → CQE Patterns**: Most violated patterns → Anti-Pattern reinforcement
+2. **CQ MCP → MutaDoc**: Most detected vulnerability types → Strategy preset optimization
 3. **CQ MCP → ThinkTank**: Decision Replay data → Persona weighting auto-adjustment
 4. **CQ Benchmark → All**: Standardized measurement unifies hypothesis validation
+
+### 4.4 Master Milestone Timeline
+
+```
+PHASE 1 (Foundation)                                          Size: M
+─────────────────────────────────────────────────────────────────────
+  M1.1  ──▶  M1.2  ──────────────────────────────────────▶  M1.7
+  M1.3  ──▶  M1.4  ──▶  M1.5  ──────────────────────────▶  M1.7
+              M1.6  ──────────────────────────────────────▶  M1.7
+
+PHASE 2 (MutaDoc)                                             Size: L
+─────────────────────────────────────────────────────────────────────
+  M2.1  ──▶  M2.2  ──────────────────────────────────────▶  M2.5
+  M2.1  ──▶  M2.3
+  M2.1  ──▶  M2.4
+  M2.1  ──▶  M2.6
+
+PHASE 3 (Distribution)                                        Size: L
+─────────────────────────────────────────────────────────────────────
+  M3.1  ──▶  M3.2  ──▶  M3.3
+                    ──▶  M3.4  ──── CTL Checkpoint ◇
+                    ──▶  M3.5  ──▶  M3.6  ──▶  M3.7
+
+PHASE 4 (ThinkTank)                                           Size: L
+─────────────────────────────────────────────────────────────────────
+  M4.2  ──▶  M4.1  ──▶  M4.3
+                    ──▶  M4.4
+                    ──▶  M4.5
+                    ──▶  M4.6
+                    ──▶  M4.7  ──▶  M4.8  ──▶  M4.10
+                    ──▶  M4.9
+                                              ──▶  M4.11
+
+PHASE 5 (CTL, Conditional)                                    Size: L
+─────────────────────────────────────────────────────────────────────
+  M5.1  ──▶  M5.2  ──▶  M5.3
+                    ──▶  M5.4  ──▶  M5.5  ──▶  M5.6
+                    ──▶  M5.7
+
+Total milestones: 38 (7 + 6 + 7 + 11 + 7 conditional)
+```
+
+### 4.5 Phase Transition Criteria
+
+| Transition | Required Milestones | Rationale |
+|------------|-------------------|-----------|
+| **Phase 1 → Phase 2** | M1.1 (4 Foundational patterns) + M1.3 (cqlint scaffold) | MutaDoc needs Assumption Mutation pattern + cqlint validation. Full Phase 1 completion NOT required — M1.2, M1.5 can overlap with early Phase 2 |
+| **Phase 2 → Phase 3** | M2.1 (strategies) + M2.2 (repair) | MCP wraps MutaDoc — functional strategies + repair required. Presets (M2.4) and benchmark (M2.5) can continue in parallel |
+| **Phase 3 → Phase 4** | M3.1 (MCP installable) + M3.2 (core tools) | ThinkTank needs MCP distribution channel. Telemetry (M3.5) and dashboard (M3.6) can overlap with early Phase 4 |
+| **Phase 3 → Phase 5** | CTL Revival Checkpoint (after M3.4) | All 4 revival conditions (RC-1 through RC-4) must be met. See [phases/phase-5-ctl.md §1](phases/phase-5-ctl.md) |
+
+**Key insight**: Phases overlap. The transition criterion is the minimum required to *start* the next phase, not full completion of the current phase. This allows pipeline parallelism.
 
 ---
 
@@ -474,165 +741,55 @@ Specific feedback paths:
 | **Tech Stack** | Pure documentation (Markdown). No code required for the catalog itself |
 | **MVP** | 8 pattern files in GoF format + index with relationship diagram |
 
-```
-cq-engine/patterns/
-├── README.md
-├── 01_attention_budget.md
-├── 02_context_gate.md
-├── 03_cognitive_profile.md
-├── 04_wave_scheduler.md
-├── 05_assumption_mutation.md
-├── 06_experience_distillation.md
-├── 07_file_based_io.md
-├── 08_template_driven_role.md
-└── anti-patterns/
-    ├── README.md
-    └── (anti-pattern files for each pattern)
-```
-
 ### 5.2 cqlint — The Verifier
 
 | Attribute | Detail |
 |-----------|--------|
 | **One-liner** | A linter for cognitive quality — catches pattern violations before execution |
-| **Key Features** | 5 rules (CQ001–CQ005), Bash + Claude Code implementation, CI/CD gate capability |
+| **Key Features** | 5 rules (CQ001–CQ005), Bash + Claude Code, CI/CD gate capability, crew + generic YAML adapters |
 | **Target Users** | AI engineers, DevOps teams integrating quality gates |
 | **Tech Stack** | Bash + Claude Code (zero infrastructure) |
-| **MVP** | `cqlint.sh` + 5 rule definitions + adapter for crew YAML and generic YAML |
-
-```
-cq-engine/cqlint/
-├── README.md
-├── cqlint.sh
-├── rules/
-│   ├── CQ001_budget_missing.md
-│   ├── CQ002_context_contamination.md
-│   ├── CQ003_generic_persona.md
-│   ├── CQ004_no_mutation_critical.md
-│   └── CQ005_learning_disabled.md
-└── adapters/
-    ├── crew_yaml.sh
-    └── generic_yaml.sh
-```
+| **MVP** | `cqlint.sh` + 5 rule implementations + 2 adapters + test fixtures |
 
 ### 5.3 MutaDoc — The Killer App
 
 | Attribute | Detail |
 |-----------|--------|
 | **One-liner** | Software mutation testing applied to documents — find hidden contradictions, ambiguities, and vulnerabilities by intentionally breaking text |
-| **Key Features** | 5 mutation strategies, 3 adversarial personas, Mutation-Driven Repair, Regression Mutation, 10+ document type presets, Mutation Kill Score |
-| **Target Users** | Lawyers (M&A contract stress testing), API engineers (spec consistency), researchers (paper logic verification), quality managers |
+| **Key Features** | 5 mutation strategies, 3 adversarial personas, Mutation-Driven Repair, Regression Mutation, 12 document presets, Mutation Kill Score |
+| **Target Users** | Lawyers, API engineers, researchers, quality managers (including non-technical users) |
 | **Tech Stack** | Bash + Markdown templates + Claude Code Task tool (zero infrastructure) |
-| **MVP** | `mutadoc.sh` + 5 strategy templates + 3 persona definitions + repair engine |
-
-```
-cq-engine/mutadoc/
-├── README.md
-├── mutadoc.sh
-├── strategies/
-│   ├── contradiction.md
-│   ├── ambiguity.md
-│   ├── deletion.md
-│   ├── inversion.md
-│   └── boundary.md
-├── personas/
-│   ├── adversarial_reader.md
-│   ├── opposing_counsel.md
-│   └── naive_implementer.md
-├── repair/
-│   └── templates/
-└── presets/
-    ├── contract.md
-    ├── api_spec.md
-    ├── academic_paper.md
-    └── policy.md
-```
+| **MVP** | `mutadoc.sh` + 5 strategies + 3 personas + repair engine + 12 presets |
 
 ### 5.4 ThinkTank — The Decision Engine
 
 | Attribute | Detail |
 |-----------|--------|
-| **One-liner** | An anti-anchoring decision engine — 8 personas analyze independently in parallel, then cross-critique, producing genuinely diverse perspectives that sequential analysis cannot achieve |
-| **Key Features** | 3-Wave process (Independent → Cross-Critique → Synthesis), Anchoring Visibility Score, Contradiction Heatmap, Parameter Mutation, Decision Replay |
-| **Target Users** | Executives (business decisions), policymakers (policy simulation), individuals (career decisions) — including non-technical users |
+| **One-liner** | An anti-anchoring decision engine — 8 personas analyze independently in parallel, then cross-critique, producing genuinely diverse perspectives |
+| **Key Features** | 3-Wave process, Anchoring Visibility Score, Contradiction Heatmap, Parameter Mutation, Decision Replay, Quick Mode (3-persona) |
+| **Target Users** | Executives, policymakers, individuals — including non-technical users |
 | **Tech Stack** | Bash + Markdown persona templates + Claude Code Task tool (zero infrastructure) |
-| **MVP** | `thinktank.sh` + 8 persona definitions + 3 Wave templates + parameter mutation template |
-
-```
-cq-engine/thinktank/
-├── README.md
-├── thinktank.sh
-├── personas/
-│   ├── business/
-│   │   ├── cfo.md, cto.md, cmo.md, investor.md
-│   ├── stakeholders/
-│   │   ├── customer.md, employee.md, regulator.md
-│   ├── meta/
-│   │   └── devils_advocate.md
-│   └── custom/
-├── waves/
-│   ├── wave1_independent.md
-│   ├── wave2_cross_critique.md
-│   └── wave3_synthesis.md
-└── mutation/
-    └── parameter_mutation.md
-```
+| **MVP** | `thinktank.sh` + 8 personas + 3 Wave templates + AVS calculator |
 
 ### 5.5 CQ MCP Server — The Distribution Platform
 
 | Attribute | Detail |
 |-----------|--------|
 | **One-liner** | One command to bring cognitive quality management to every Claude Code session: `claude mcp add cq-engine` |
-| **Key Features** | 8 MCP tools, 2 MCP resources, Hooks integration, local telemetry for self-improvement |
-| **Target Users** | All Claude Code users (zero learning cost — Claude autonomously decides when to use CQ tools) |
+| **Key Features** | 8 MCP tools, 3 MCP resources, 3 Hooks, local telemetry, CQ Health Dashboard |
+| **Target Users** | All Claude Code users (zero learning cost — Claude autonomously uses CQ tools) |
 | **Tech Stack** | Python MCP SDK (sole infrastructure exception) + Bash/CLI fallback for every tool |
-| **MVP** | `server.py` + tool implementations + hooks scripts + telemetry module |
-
-```
-cq-engine/mcp-server/
-├── README.md
-├── server.py
-├── tools/
-│   ├── decompose.py
-│   ├── gate.py
-│   ├── persona.py
-│   ├── mutate.py
-│   ├── learn.py
-│   ├── cqlint.py
-│   ├── mutadoc.py
-│   └── thinktank.py
-├── resources/
-│   ├── patterns.py
-│   └── learned.py
-├── telemetry/
-│   └── collector.py
-└── hooks/
-    ├── cognitive_hygiene_check.sh
-    └── auto_mutation.sh
-```
+| **MVP** | `server.py` + 6 core tools + hooks + telemetry collector |
 
 ### 5.6 CQ Benchmark — The Measurement Framework
 
 | Attribute | Detail |
 |-----------|--------|
-| **One-liner** | A unified measurement framework for cognitive quality — because you cannot call it "engineering" without measurement |
-| **Key Features** | 4-axis scoring (Context Health, Decision Quality, Document Integrity, Evolution), standardized metrics across all directions |
+| **One-liner** | A unified measurement framework for cognitive quality — you cannot call it "engineering" without measurement |
+| **Key Features** | 4-axis scoring (Context Health, Decision Quality, Document Integrity, Evolution), standardized metrics |
 | **Target Users** | AI engineers using any CQE direction (internal validation tool) |
-| **Tech Stack** | Specification document (Phase 1) + measurement scripts (Phase 2+) |
-| **MVP** | Specification document defining 4 axes, sub-metrics, and calculation methods |
-
-**Cross-cutting nature**: CQ Benchmark is not a separate phase — it is defined in Phase 1 and applied progressively from Phase 2 onward. It serves as the common yardstick that prevents each direction from claiming success with incompatible metrics.
-
-```
-cq-engine/benchmark/
-├── README.md
-├── spec.md
-└── measures/
-    ├── context_health.md
-    ├── decision_quality.md
-    ├── document_integrity.md
-    └── evolution.md
-```
+| **Tech Stack** | Specification (Phase 1) + measurement scripts (Phase 2+) |
+| **MVP** | Spec document with 4 axes, 12 sub-metrics, formulas, and worked examples |
 
 ---
 
@@ -640,82 +797,52 @@ cq-engine/benchmark/
 
 ### 6.1 Phase-Specific Risks
 
-#### Phase 1 Risks
+See each Phase section above for detailed risk tables. Summary of top risks per phase:
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Pattern misuse epidemic (Strategy hell, Factory of Factories) | Undermines CQE credibility | Anti-Patterns + Failure Catalog + Weight classification (Foundational/Situational/Advanced) included from v0.1 |
-| "8 patterns = too many to adopt" pressure | Slows adoption | Weight classification lets users start with 3 Foundational patterns only |
-| Evidence Level B for all patterns (no quantitative validation yet) | Academic skepticism | Explicitly disclose Evidence Levels; upgrade to A as quantitative data becomes available |
-
-#### Phase 2 Risks
-
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| "Just ask ChatGPT to review" perception | MutaDoc dismissed as unnecessary | "30-second experience" design — show a result ChatGPT review missed within 30 seconds |
-| Repair suggestions are unusable | Mutation-Driven Repair seen as noise | Target 30%+ "use as-is" rate; show diff view for easy evaluation |
-| Document type coverage too narrow (only 3 types) | Perceived as niche tool | Launch with 10+ document type presets |
-| Slow execution (5+ minutes) | UX indistinguishable from ChatGPT | Progress display within 30s, Critical first-report within 2 minutes |
-
-#### Phase 3 Risks
-
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| Python dependency contradicts zero-infrastructure principle | Philosophy inconsistency | Always provide Bash/CLI fallback for every MCP tool |
-| Telemetry privacy concerns | User distrust | All telemetry strictly local. No data leaves the machine. Ever |
-| Agent Teams competition | Claude Code's Agent Teams directly competes with crew | Prepare crew templates as Agent Teams CLAUDE.md injection path |
-| Claude Code API changes | MCP server breaks on Claude Code updates | Pin to stable MCP SDK version; maintain compatibility test suite |
-
-#### Phase 4 Risks
-
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| "Multi-perspective = SWOT/Six Hats" perception | ThinkTank dismissed as derivative | Position as "Anti-Anchoring Engine," not "multi-perspective tool." Quantify anchoring elimination |
-| 8 personas too expensive (API costs) | Prohibitive for casual use | Provide 3-persona quick mode; 8-persona for important decisions |
-| Anchoring Visibility Score methodology unvalidated | Core differentiator is unproven | Validate in Phase 4 H4 with statistical rigor before marketing the score |
+| Phase | Top Risk | Mitigation |
+|-------|----------|------------|
+| Phase 1 | Evidence Level B only — academic skepticism | arXiv-compatible format; define upgrade path to Level A |
+| Phase 2 | "Just ask ChatGPT" perception | "30-second experience" shows result ChatGPT missed |
+| Phase 3 | Python dependency contradicts zero-infra | Bash/CLI fallback for every MCP tool |
+| Phase 4 | "Multi-perspective = SWOT" perception | Position as Anti-Anchoring Engine; lead with AVS |
+| Phase 5 | Revival conditions never met | No implementation effort until GO; design doc serves as reference |
 
 ### 6.2 Cross-Cutting Risks
 
 | Risk | Impact | Mitigation |
 |------|--------|------------|
-| Hypothesis baselines are vague | Cannot validate success | Apply 5-element framework (IV / DV / Baseline / Effect Size / Sample Size) to all hypotheses before testing |
-| "Engineering discipline" claim without academic backing | Credibility challenge | Phase 1 patterns written in arXiv-compatible format; pursue academic publication track |
-| Community building not addressed | Ecosystem stalls at solo developer | Post Phase 3 MCP launch: open GitHub Discussions, build contributor onboarding |
-| Revenue model undefined | Long-term sustainability unclear | Explicitly out of scope — focus on value creation first |
-| Competitor analysis incomplete (LangGraph, CrewAI) | Blind spots in positioning | Schedule competitive analysis as a dedicated task before Phase 2 |
+| Hypothesis baselines are vague | Cannot validate success | 5-element framework (IV/DV/Baseline/Effect/Sample) for all hypotheses |
+| "Engineering discipline" claim without academic backing | Credibility challenge | Phase 1 patterns in arXiv-compatible format; pursue publication |
+| Community building not addressed | Ecosystem stalls | GitHub Discussions post Phase 3 MCP launch |
+| Revenue model undefined | Sustainability unclear | Explicitly out of scope — focus on value creation first |
+| Competitor analysis incomplete | Positioning blind spots | Schedule competitive analysis before Phase 2 |
 
 ### 6.3 Prerequisites
 
 | Prerequisite | Applies To | Description |
 |--------------|-----------|-------------|
-| Zero-infrastructure principle | All Phases | Bash + Markdown + Claude Code as default. Python only for MCP Server, with CLI fallback |
-| Sequential execution | All Phases | No phase skipping. Each phase's entry criteria must be met |
-| Hypothesis validation framework | All Phases | 5-element framework applied to every hypothesis before testing |
-| arXiv-compatible writing | Phase 1 | Pattern catalog must be publishable as academic paper |
-| 30-second experience design | Phase 1–4 | Every direction must have an instant "aha moment" for new users |
-| Circular feedback architecture | Phase 3+ | Design telemetry → pattern evolution loops into the MCP Server from day one |
-| Privacy-first telemetry | Phase 3+ | All data collection strictly local. No remote transmission. Non-negotiable |
+| Zero-infrastructure principle | All Phases | Bash + Markdown + Claude Code. Python only for MCP Server |
+| Sequential execution | All Phases | Each phase's entry criteria must be met (with overlap allowed) |
+| Hypothesis validation framework | All Phases | 5-element framework for every hypothesis |
+| arXiv-compatible writing | Phase 1 | Pattern catalog publishable as academic paper |
+| 30-second experience design | Phase 1–4 | Every direction has an instant "aha moment" |
+| Circular feedback architecture | Phase 3+ | Telemetry → pattern evolution from day one |
+| Privacy-first telemetry | Phase 3+ | All data strictly local. Non-negotiable |
 
 ### 6.4 Deferred Directions (Revival Conditions)
 
-These directions were not selected but have explicit revival conditions:
-
 | Direction | Revival Condition | Timing |
 |-----------|-------------------|--------|
-| CTL (Cognitive Task Language) | CQE Patterns v0.2+ AND community demand for declarative task definition | Phase 3+ |
-| Cognitive Quality Protocol (CQP) | CQE Patterns reach 2+ versions, need for inter-framework interoperability | Phase 3+ |
-| Personal CQ Assistant | Add personal mode to CQ MCP Server | Phase 3 |
-| ContextOS concepts | Incorporate into CQ MCP Server gate tool internals | Phase 3 gate tool implementation |
-| Academic citations | Adopt arXiv-publishable format for patterns | Phase 1 (built-in) |
-| Community building | GitHub Discussions after MCP public launch | Phase 3+ |
+| CTL (Cognitive Task Language) | 4 quantitative criteria (RC-1 through RC-4) | Phase 3 checkpoint |
+| Cognitive Quality Protocol (CQP) | Patterns v0.2+, inter-framework interoperability need | Phase 3+ |
+| Personal CQ Assistant | Personal mode in CQ MCP Server | Phase 3 |
+| ContextOS concepts | Incorporated into gate tool internals | Phase 3 gate implementation |
+| Academic citations | arXiv-publishable format for patterns | Phase 1 (built-in) |
+| Community building | GitHub Discussions after MCP launch | Phase 3+ |
 
 ---
 
 ## 7. Repository Structure
-
-The `cq-engine` repository follows a monorepo structure with phase-by-phase growth. Each phase adds new top-level directories while keeping the existing structure intact.
-
-### Full Structure (All Phases Complete)
 
 ```
 cq-engine/
@@ -723,84 +850,54 @@ cq-engine/
 ├── LICENSE                            # MIT License
 ├── CLAUDE.md                          # Claude Code integration settings
 ├── CONTRIBUTING.md                    # Contribution guide
-├── .github/
-│   └── workflows/
-│       ├── cqlint-check.yml           # PR cqlint check
-│       └── test.yml                   # Full test suite
+├── .github/workflows/                 # CI/CD
 │
 ├── patterns/                          # CQE Patterns catalog (Phase 1)
-│   ├── README.md
-│   ├── 01_attention_budget.md
-│   ├── 02_context_gate.md
-│   ├── 03_cognitive_profile.md
-│   ├── 04_wave_scheduler.md
-│   ├── 05_assumption_mutation.md
-│   ├── 06_experience_distillation.md
-│   ├── 07_file_based_io.md
-│   ├── 08_template_driven_role.md
+│   ├── README.md                      #   Index + relationship diagram
+│   ├── 01_attention_budget.md         #   8 pattern files
+│   ├── ...
 │   └── anti-patterns/
 │
 ├── cqlint/                            # CQ Linter (Phase 1)
-│   ├── README.md
-│   ├── cqlint.sh
-│   ├── rules/
-│   └── adapters/
+│   ├── cqlint.sh                      #   Entry point
+│   ├── lib/                           #   Parser, output, utilities
+│   ├── rules/                         #   CQ001-CQ005 (.sh + .md)
+│   ├── adapters/                      #   crew_yaml.sh, generic_yaml.sh
+│   └── tests/                         #   Fixtures + test runner
 │
 ├── benchmark/                         # CQ Benchmark (Phase 1)
-│   ├── README.md
-│   ├── spec.md
-│   └── measures/
+│   ├── spec.md                        #   Full specification
+│   └── measures/                      #   Per-axis detail
 │
 ├── mutadoc/                           # MutaDoc (Phase 2)
-│   ├── README.md
-│   ├── mutadoc.sh
-│   ├── strategies/
-│   ├── personas/
-│   ├── repair/
-│   └── presets/
-│
-├── mcp-server/                        # CQ MCP Server (Phase 3)
-│   ├── README.md
-│   ├── server.py
-│   ├── tools/
-│   ├── resources/
-│   ├── telemetry/
-│   └── hooks/
+│   ├── mutadoc.sh                     #   Entry point
+│   ├── strategies/                    #   5 strategy templates
+│   ├── personas/                      #   3 adversarial personas
+│   ├── repair/templates/              #   Repair templates per strategy
+│   ├── presets/                       #   12 document type presets
+│   └── test_fixtures/                 #   Test documents
 │
 ├── thinktank/                         # ThinkTank (Phase 4)
-│   ├── README.md
-│   ├── thinktank.sh
-│   ├── personas/
-│   ├── waves/
-│   └── mutation/
+│   ├── thinktank.sh                   #   Entry point
+│   ├── personas/                      #   8 personas (business/stakeholder/meta/custom)
+│   ├── waves/                         #   3 Wave templates + formats
+│   └── mutation/                      #   AVS calculator + sequential baseline
+│
+├── mcp-server/                        # CQ MCP Server (Phase 3)
+│   ├── server.py                      #   MCP server entry point
+│   ├── tools/                         #   8 MCP tool implementations
+│   ├── resources/                     #   patterns, learned, health
+│   ├── telemetry/                     #   Collector + aggregation
+│   └── hooks/                         #   3 hook scripts
 │
 ├── docs/                              # Documentation
-│   ├── overview.md
+│   ├── roadmap.md                     #   This file
 │   ├── architecture.md
-│   ├── roadmap.md
 │   ├── glossary.md
 │   └── guides/
-│       ├── quick-start.md
-│       ├── pattern-writing.md
-│       └── cqlint-rules.md
 │
 └── examples/                          # Usage examples
-    ├── crew-yaml/
-    ├── claude-code/
-    └── standalone/
 ```
-
-### File Naming Conventions
-
-| Target | Convention | Example |
-|--------|-----------|---------|
-| Pattern files | `NN_snake_case.md` | `01_attention_budget.md` |
-| Rule files | `CQNNN_snake_case.md` | `CQ001_budget_missing.md` |
-| Shell scripts | `snake_case.sh` | `cqlint.sh`, `mutadoc.sh` |
-| Python modules | `snake_case.py` | `decompose.py`, `gate.py` |
-| Persona files | `snake_case.md` | `adversarial_reader.md` |
-| Strategy files | `snake_case.md` | `contradiction.md` |
-| Documentation | `kebab-case.md` | `quick-start.md` |
 
 ---
 
@@ -845,8 +942,6 @@ cq-engine/
 
 ## Appendix B: Uniqueness Scores
 
-Final evaluation matrix from initial exploration (sharpness ranking):
-
 | Direction | Uniqueness (30%) | Crew Fit (25%) | Impact (20%) | Feasibility (15%) | Synergy (10%) | Weighted | Rank |
 |-----------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | MutaDoc | 10 | 9 | 9 | 8 | 7 | 9.0 | 1 |
@@ -855,11 +950,22 @@ Final evaluation matrix from initial exploration (sharpness ranking):
 | CQ MCP Server | 7 | 8 | 8 | 6 | 10 | 7.7 | 4 |
 | CQ Benchmark | 6 | 8 | 7 | 8 | 10 | 7.5 | 5 |
 
-**Note**: Uniqueness rank ≠ implementation order. MutaDoc ranks #1 in uniqueness but is Phase 2 in implementation, because the foundation (CQE Patterns) must exist first. Without named patterns, killer apps are just "useful tools."
+**Note**: Uniqueness rank ≠ implementation order. MutaDoc ranks #1 but is Phase 2, because the foundation (CQE Patterns) must exist first.
 
 ## Appendix C: cq-engine Extension vs Standalone Product
 
 | Classification | Directions | Criteria |
 |---------------|-----------|----------|
 | **cq-engine Extension** | CQE Patterns, cqlint, CQ MCP Server, CQ Benchmark | Target: AI engineers. Runs on Claude Code. Distribution: MCP/Skills/Hooks |
-| **Standalone Product** | MutaDoc, ThinkTank | Target: includes non-technical users. Valuable without knowing Claude Code exists. Independent CLI or Web |
+| **Standalone Product** | MutaDoc, ThinkTank | Target: includes non-technical users. Valuable without Claude Code. Independent CLI or Web |
+
+## Appendix D: Effort Summary
+
+| Phase | Tasks | Milestones | Estimated Lines | Size |
+|-------|:-----:|:----------:|:---------------:|:----:|
+| Phase 1 (Foundation) | ~25 | 7 | ~5,700 | M |
+| Phase 2 (MutaDoc) | 40 | 6 | ~8,000+ | L |
+| Phase 3 (MCP Server) | 18 | 7 | ~4,000+ | L |
+| Phase 4 (ThinkTank) | 30 | 11 | ~6,000+ | L |
+| Phase 5 (CTL, conditional) | 10 | 7 | ~3,000+ | L |
+| **Total** | **~123** | **38** | **~26,700+** | |
