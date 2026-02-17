@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "cq-engine": {
+      "command": "python",
+      "args": ["server.py"],
+      "cwd": "."
+    }
+  }
+}

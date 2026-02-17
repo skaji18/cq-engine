@@ -7,7 +7,7 @@
 # Zero Infrastructure: Bash + standard UNIX tools only.
 # No LLM API calls. Static analysis of document structure and language.
 
-set -euo pipefail
+set -uo pipefail
 
 VERSION="0.1.0"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -269,7 +269,7 @@ extract_sections() {
 document_stats() {
     local line_count section_count word_count
     line_count=$(wc -l < "$DOCUMENT")
-    section_count=$(grep -cE '^#{1,4} ' "$DOCUMENT" 2>/dev/null || echo 0)
+    section_count=$(grep -cE '^#{1,4} ' "$DOCUMENT" 2>/dev/null) || section_count=0
     word_count=$(wc -w < "$DOCUMENT")
     echo "${line_count}:${section_count}:${word_count}"
 }
@@ -519,10 +519,10 @@ run_deletion() {
         local before_refs=0
         local after_refs=0
         if [[ $start -gt 1 ]]; then
-            before_refs=$(sed -n "1,$((start-1))p" "$DOCUMENT" | grep -ciE "$name_escaped" 2>/dev/null || echo 0)
+            before_refs=$(sed -n "1,$((start-1))p" "$DOCUMENT" | grep -ciE "$name_escaped" 2>/dev/null) || before_refs=0
         fi
         if [[ $end -lt $total_lines ]]; then
-            after_refs=$(sed -n "$((end+1)),${total_lines}p" "$DOCUMENT" | grep -ciE "$name_escaped" 2>/dev/null || echo 0)
+            after_refs=$(sed -n "$((end+1)),${total_lines}p" "$DOCUMENT" | grep -ciE "$name_escaped" 2>/dev/null) || after_refs=0
         fi
         ref_count=$((before_refs + after_refs))
 
