@@ -4,9 +4,8 @@
     <strong>Cognitive Quality Engineering for LLM Agents</strong>
   </p>
   <p align="center">
-    <!-- Badges: replace URLs once repository is public -->
-    <img src="https://img.shields.io/badge/phase-1%20%2F%204-blue" alt="Phase">
-    <img src="https://img.shields.io/badge/status-conceptual-orange" alt="Status">
+    <img src="https://img.shields.io/badge/phase-3%20%2F%204-blue" alt="Phase">
+    <img src="https://img.shields.io/badge/status-active-brightgreen" alt="Status">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
     <img src="https://img.shields.io/badge/infra-zero--dependency-brightgreen" alt="Zero Infra">
   </p>
@@ -88,9 +87,11 @@ Eight core patterns for LLM agent cognitive quality, written in GoF format (Prob
 | 7 | **File-Based I/O** | Agent communication lacks reliability and transparency | Foundational |
 | 8 | **Template-Driven Role** | Implicit roles cause inconsistent quality | Situational |
 
-Each pattern includes Anti-Patterns, a Failure Catalog, and an Evidence Level (A: quantitatively verified — D: hypothesis).
+Each pattern includes Anti-Patterns (34 total), a Failure Catalog, an Interaction Catalog, and an Evidence Level (A: quantitatively verified — D: hypothesis). All 8 patterns are currently at Evidence Level B.
 
-**Status:** `Planned`
+See [patterns/README.md](patterns/README.md) for the full catalog, dependency graph, and recommended reading order.
+
+**Status:** `v0.1 — Implemented`
 
 ---
 
@@ -105,15 +106,25 @@ The world has grammar checkers (Grammarly), contract extractors (ContractPodAi),
 - **Mutation-Driven Repair** — auto-generates fix proposals for every Critical finding
 - **Regression mutation** — re-mutates the repaired version to catch new weaknesses
 - **Mutation Kill Score** — a quantified document quality metric that doesn't exist yet
-- **10+ document-type presets** — contracts, API specs, academic papers, policy docs, and more
+- **4 document-type presets** — contracts, API specs, academic papers, policy docs
+- **3 adversarial personas** — opposing counsel, naive implementer, adversarial reader
 
 **Target users:** Lawyers (M&A stress-testing), API engineers (spec verification), researchers (logic validation) — including non-technical users.
 
-```
-mutadoc test contract.md --strategies all --personas adversarial_reader
+```bash
+# Quick ambiguity scan
+./mutadoc/mutadoc.sh quick your-document.md
+
+# Full analysis with preset
+./mutadoc/mutadoc.sh test contract.md --preset contract
+
+# Just the Mutation Kill Score
+./mutadoc/mutadoc.sh score document.md
 ```
 
-**Status:** `Planned`
+See [mutadoc/README.md](mutadoc/README.md) for the full documentation.
+
+**Status:** `v0.1 — Implemented`
 
 ---
 
@@ -136,7 +147,7 @@ When you ask ChatGPT to "analyze from 8 perspectives," each perspective is gener
 - **Contradiction Heatmap** — 8x8 matrix showing where personas disagree
 - **Decision Replay** — re-analyze past decisions to improve future judgment quality
 
-**Status:** `Planned`
+**Status:** `Planned` (Phase 4)
 
 ---
 
@@ -153,7 +164,7 @@ A unified measurement framework for cognitive quality, ensuring all components s
 | **Document Integrity** | Mutation Kill rate, contradiction count, ambiguity score |
 | **Evolution** | Pattern conformance, learning accumulation rate, recurrence rate |
 
-**Status:** `Planned`
+**Status:** `v0.1 — Specification Complete`
 
 ---
 
@@ -170,13 +181,18 @@ An MCP server that bundles all components into tools that Claude Code can call a
 | `cq_engine__decompose` | Break tasks into cognitively-budgeted subtasks |
 | `cq_engine__gate` | Filter context to only what each subtask needs |
 | `cq_engine__persona` | Select the right cognitive profile for each subtask |
-| `cq_engine__mutadoc` | Run document mutation tests |
-| `cq_engine__thinktank` | Multi-perspective decision analysis |
-| `cq_engine__cqlint` | Static analysis for cognitive quality |
+| `cq_engine__mutate` | Run document mutation tests |
 | `cq_engine__learn` | Accumulate experience from execution |
-| `cq_engine__benchmark` | Measure cognitive quality metrics |
+| `cq_engine__cqlint` | Static analysis for cognitive quality |
 
-**Status:** `Planned`
+**Also includes:**
+- 3 MCP Resources — patterns catalog, accumulated learnings, health dashboard
+- 3 Claude Code Hooks — cognitive hygiene check, auto mutation, auto learn
+- Local-only telemetry collector (JSONL, no network calls)
+
+See [mcp-server/README.md](mcp-server/README.md) for the full documentation.
+
+**Status:** `v0.1 — Implemented`
 
 ---
 
@@ -195,12 +211,12 @@ A static analysis tool for agent configurations. Five initial rules:
 | CQ005 | Learning mechanism disabled |
 
 ```bash
-$ cqlint check .
+$ ./cqlint/cqlint.sh check .
 WARNING CQ001: Task "deploy_service" has no attention budget defined.
 ERROR   CQ002: Agent "reviewer" receives unfiltered output from "analyzer" (Context Gate missing).
 ```
 
-**Status:** `Planned`
+**Status:** `v0.1 — Implemented`
 
 ---
 
@@ -215,39 +231,66 @@ CQE Patterns     MutaDoc v0.1     CQ MCP Server    ThinkTank v0.1
 + CQ Benchmark   + Benchmark      + Hooks           + 3-Wave Pipe
   v0.1             applied          Integration      + Feedback Loop
 
-  ◀── YOU ARE HERE
+  ✓ COMPLETE       ✓ COMPLETE       ✓ COMPLETE       ◀── NEXT
 
-[████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░] ~10%
+[████████████████████████████████░░░░░░░░░░] ~75%
 ```
 
-**What's happening now:** Defining the 8 core patterns, designing the cqlint rule set, and specifying the CQ Benchmark axes. No code yet — we're naming concepts first, because naming is the highest-leverage activity at this stage.
+**Phases 1–3 are complete.** The project has delivered 88 files and ~20,000 lines of implementation across CQE Patterns (8 patterns in GoF format), cqlint (5 rules), CQ Benchmark (4-axis specification), MutaDoc (5 strategies, 3 personas, 4 presets), and CQ MCP Server (6 tools, 3 resources, 3 hooks). Phase 4 (ThinkTank — anti-anchoring multi-perspective decision engine) is next.
 
 ---
 
 ## Getting Started
 
-> This section will be populated once Phase 1 delivers working tools. Here's what to expect:
-
-### cqlint (first tool available)
+### cqlint — Check your agent configuration
 
 ```bash
-# Install (planned)
-# git clone https://github.com/skaji18/cq-engine.git && cd cq-engine
-# ./install.sh
+# Clone the repository
+git clone https://github.com/skaji18/cq-engine.git && cd cq-engine
 
 # Scan your agent configuration for cognitive quality issues
-cqlint check path/to/your/agent-config/
+./cqlint/cqlint.sh check path/to/your/agent-config/
 
-# Check a specific file
-cqlint check my-crew.yaml --rules CQ001,CQ002
+# Check specific rules
+./cqlint/cqlint.sh check my-crew.yaml --rules CQ001,CQ002
 ```
 
-### MCP Server (Phase 3)
+### MutaDoc — Break your documents to find weaknesses
 
 ```bash
-# One-line install into Claude Code (planned)
-claude mcp add cq-engine
+# Run MutaDoc on a document
+./mutadoc/mutadoc.sh test your-document.md
+
+# Quick ambiguity scan
+./mutadoc/mutadoc.sh quick contract.md
+
+# Just the Mutation Kill Score
+./mutadoc/mutadoc.sh score spec.md
 ```
+
+### CQ MCP Server — Add cognitive quality to Claude Code
+
+```bash
+# Install dependencies
+cd mcp-server && pip install -r requirements.txt
+
+# Register with Claude Code
+claude mcp add cq-engine -- python server.py
+```
+
+---
+
+## Repository Statistics
+
+| Component | Files | Lines | Phase |
+|-----------|:-----:|:-----:|:-----:|
+| CQE Patterns | 10 | ~2,900 | 1 |
+| cqlint | 17 | ~1,000 | 1 |
+| CQ Benchmark | 6 | ~1,300 | 1 |
+| MutaDoc | 23 | ~6,900 | 2 |
+| CQ MCP Server | 21 | ~3,200 | 3 |
+| Docs & Config | 11 | ~4,700 | — |
+| **Total** | **88** | **~20,000** | |
 
 ---
 
@@ -287,12 +330,12 @@ See [ROADMAP.md](ROADMAP.md) for the detailed plan.
 
 ### Quick Overview
 
-| Phase | Focus | Key Deliverables | Timeframe |
-|-------|-------|-----------------|-----------|
-| **1 — Foundation** | Name the concepts | CQE Patterns v0.1, cqlint v0.1, CQ Benchmark v0.1 | Current |
-| **2 — Killer App** | Prove the value | MutaDoc v0.1 with auto-repair, benchmark validation | Next |
-| **3 — Distribution** | Reach every user | CQ MCP Server, Hooks integration, telemetry | Upcoming |
-| **4 — Expansion** | Complete the vision | ThinkTank v0.1, feedback loop, pattern evolution | Future |
+| Phase | Focus | Key Deliverables | Status |
+|-------|-------|-----------------|--------|
+| **1 — Foundation** | Name the concepts | CQE Patterns v0.1, cqlint v0.1, CQ Benchmark v0.1 | ✓ Complete |
+| **2 — Killer App** | Prove the value | MutaDoc v0.1 with auto-repair, benchmark validation | ✓ Complete |
+| **3 — Distribution** | Reach every user | CQ MCP Server, Hooks integration, telemetry | ✓ Complete |
+| **4 — Expansion** | Complete the vision | ThinkTank v0.1, feedback loop, pattern evolution | Next |
 
 ### Design Principles
 

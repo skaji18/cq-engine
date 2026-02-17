@@ -15,6 +15,8 @@ cq-engine/
 ├── patterns/       # CQE Patterns catalog (8 core patterns + anti-patterns)
 ├── cqlint/         # CQ Linter (static analysis for cognitive quality)
 ├── benchmark/      # CQ Benchmark (standardized measurement framework)
+├── mutadoc/        # MutaDoc (document mutation testing + auto-repair)
+├── mcp-server/     # CQ MCP Server (MCP tools, resources, hooks, telemetry)
 ├── examples/       # Usage examples
 └── docs/           # Documentation
 ```
@@ -26,6 +28,8 @@ cq-engine/
 | `patterns/` | Core pattern catalog. Each pattern follows a structured format: Problem, Solution, Anti-Pattern, Failure Catalog, Evidence Level. | Phase 1 |
 | `cqlint/` | Bash-based linter that checks agent configurations against CQE patterns. Zero-infrastructure design. | Phase 1 |
 | `benchmark/` | Standardized metrics for measuring cognitive quality across 4 axes: Context Health, Decision Quality, Document Integrity, Evolution. | Phase 1 |
+| `mutadoc/` | Document mutation testing engine. 5 strategies, 3 personas, mutation-driven repair. Bash-based. | Phase 2 |
+| `mcp-server/` | MCP server packaging all tools for Claude Code. Python (MCP SDK). 6 tools, 3 resources, 3 hooks. | Phase 3 |
 | `examples/` | Practical usage examples for different agent frameworks. | Phase 1 |
 | `docs/` | Architecture docs, roadmap, glossary, and guides. | Phase 1 |
 
@@ -46,6 +50,8 @@ This project follows a strict zero-infrastructure approach:
 - Linter rules: Markdown for definitions, Bash (`.sh`) for implementation
 - Benchmark specifications: Markdown (`.md`)
 - MCP Server (Phase 3 only): Python (`.py`)
+- MCP Server tools: Python (`.py`) — async functions with type hints and docstrings
+- Hook scripts: Bash (`.sh`) — Claude Code hook format (stdin JSON, stdout JSON)
 
 ### File Naming
 
@@ -81,7 +87,7 @@ Types:
   chore:    Maintenance tasks
 
 Scopes:
-  patterns, cqlint, benchmark, docs, examples
+  patterns, cqlint, benchmark, mutadoc, mcp-server, docs, examples
 ```
 
 ### Co-Authored-By Trailer (Required)
@@ -89,7 +95,7 @@ Scopes:
 All commits in this repository **must** include the following trailer:
 
 ```
-Co-Authored-By: Claude <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 
 This indicates that Claude Code assisted in creating or modifying the committed content. The trailer must be placed after a blank line at the end of the commit message body.
@@ -105,20 +111,18 @@ Example with trailer:
 ```
 feat(patterns): add Attention Budget pattern with anti-patterns
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 
 ## Current Phase
 
-**Phase 1: Foundation**
+**Phase 3: Distribution — COMPLETE**
 
-Phase 1 focuses on establishing the theoretical and tooling foundation:
+Phases 1-3 are complete:
 
-- CQE Patterns v0.1 (8 core patterns in GoF-inspired format)
-- cqlint v0.1 (5 initial rules, Bash implementation)
-- CQ Benchmark v0.1 (4-axis metric specification)
+- Phase 1 (Foundation): CQE Patterns v0.1 (8 patterns), cqlint v0.1 (5 rules), CQ Benchmark v0.1
+- Phase 2 (Killer App): MutaDoc v0.1 (5 strategies, 3 personas, mutation-driven repair)
+- Phase 3 (Distribution): CQ MCP Server v0.1 (6 tools, 3 resources, 3 hooks, telemetry)
 
-Future phases (not yet started):
-- Phase 2: Killer apps (MutaDoc)
-- Phase 3: Distribution (CQ MCP Server)
-- Phase 4: Expansion (ThinkTank)
+Next phase:
+- Phase 4: Expansion (ThinkTank — not yet started)
