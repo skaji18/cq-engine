@@ -84,11 +84,28 @@ Scopes:
   patterns, cqlint, benchmark, docs, examples
 ```
 
+### Co-Authored-By Trailer (Required)
+
+All commits in this repository **must** include the following trailer:
+
+```
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+This indicates that Claude Code assisted in creating or modifying the committed content. The trailer must be placed after a blank line at the end of the commit message body.
+
 Examples:
 ```
 feat(patterns): add Attention Budget pattern with anti-patterns
 fix(cqlint): correct false positive in CQ003 persona check
 docs(benchmark): clarify Context Health Score calculation
+```
+
+Example with trailer:
+```
+feat(patterns): add Attention Budget pattern with anti-patterns
+
+Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ## Current Phase
