@@ -1,0 +1,5 @@
+# CQ003 PASS: Agent with domain-specific persona
+agent:
+  name: security_reviewer
+  persona: "Senior security auditor specializing in contract review with 10 years of experience in financial services compliance"
+  task: Review the authentication module

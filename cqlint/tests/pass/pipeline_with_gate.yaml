@@ -1,0 +1,15 @@
+# CQ002 PASS: Pipeline with context gates between stages
+pipeline:
+  stages:
+    - name: research
+      output: findings.md
+    - name: analysis
+      input_scope: findings.md
+      context_gate:
+        - summary
+        - key_findings
+      depends_on: research
+    - name: report
+      input_scope: analysis_output.md
+      context_filter: relevant_sections
+      depends_on: analysis

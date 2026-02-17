@@ -1,0 +1,5 @@
+# CQ003 FAIL: Agent with generic persona
+agent:
+  name: my_agent
+  persona: "assistant"
+  task: Review the authentication module

@@ -1,0 +1,5 @@
+# CQ001 FAIL: Task with no attention budget
+task:
+  name: analyze_codebase
+  description: Analyze the codebase for security vulnerabilities
+  output: report.md

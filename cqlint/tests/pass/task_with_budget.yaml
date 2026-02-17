@@ -1,0 +1,6 @@
+# CQ001 PASS: Task with attention budget defined
+task:
+  name: analyze_codebase
+  description: Analyze the codebase for security vulnerabilities
+  attention_budget: 4000
+  quality_checkpoint_at: 0.7

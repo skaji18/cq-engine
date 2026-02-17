@@ -1,0 +1,6 @@
+# CQ005 PASS: Project with learning enabled
+project:
+  name: my_agent_system
+  learning: enabled
+  memory_path: ./memory/
+  experience_distillation: enabled

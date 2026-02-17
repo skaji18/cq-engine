@@ -1,0 +1,6 @@
+# CQ004 FAIL: Critical task with no mutation or review step
+task:
+  name: contract_review
+  description: Review the M&A contract for vulnerabilities
+  danger_level: critical
+  output: review_report.md

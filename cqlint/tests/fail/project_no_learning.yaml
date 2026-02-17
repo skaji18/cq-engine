@@ -1,0 +1,5 @@
+# CQ005 FAIL: Project with no learning mechanism
+project:
+  name: my_agent_system
+  output_path: ./output/
+  log_level: info

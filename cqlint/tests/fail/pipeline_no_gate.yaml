@@ -1,0 +1,11 @@
+# CQ002 FAIL: Pipeline with no context filtering between stages
+pipeline:
+  stages:
+    - name: research
+      output: all_data
+    - name: analysis
+      input: research.output
+      depends_on: research
+    - name: report
+      input: analysis.output
+      depends_on: analysis

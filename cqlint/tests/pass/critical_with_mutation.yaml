@@ -1,0 +1,7 @@
+# CQ004 PASS: Critical task with mutation testing
+task:
+  name: contract_review
+  description: Review the M&A contract for vulnerabilities
+  danger_level: critical
+  mutation: true
+  gate_required: true
